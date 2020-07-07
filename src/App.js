@@ -11,15 +11,16 @@ import Inventory from "./components/Inventory";
 //import { AddInventoryContainer } from "./containers/AddInventoryContainer";
 //import AddShopForm from "./AddShopForm";
 
-import HomeComponent from "./components/HomeComponent";
-import HomeComponentWithIndexedDB from "./components/HomeComponentWithIndexedDB";
+// import HomeComponent from "./components/HomeComponent";
+// import HomeComponentWithIndexedDB from "./components/HomeComponentWithIndexedDB";
 
 initDB(DBConfig);
 
 const App = () => {
   return (
-    <Container className="p-3">
+    <Container>
       <Jumbotron>
+        {" "}
         <h1 style={{ fontStyle: "italic", color: "grey" }} className="header">
           Sadguru's Amrit-Tulya - Tea Shop
         </h1>
@@ -29,9 +30,9 @@ const App = () => {
         &nbsp;
         {/* <FormExample /> */}
         {/* <InventoryList /> */}
-        <HomeComponent />
+        {/* <HomeComponent />
         &nbsp;
-        <HomeComponentWithIndexedDB />
+        <HomeComponentWithIndexedDB /> */}
         &nbsp;
       </Jumbotron>
     </Container>

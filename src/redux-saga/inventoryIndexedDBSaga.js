@@ -1,4 +1,4 @@
-import { put, takeLatest, all } from "redux-saga/effects";
+import { put, takeLatest, all, takeEvery } from "redux-saga/effects";
 import * as types from "../redux-actions/actionTypes";
 import { useIndexedDB } from "react-indexed-db";
 
@@ -13,15 +13,35 @@ const {
 } = useIndexedDB("inventory");
 
 function* createInventory(action) {
+  //console.log(action);
   try {
-    const { item } = action;
-    const items = yield add(`${item}`);
+    const {
+      avatar,
+      createdAt,
+      description,
+      name,
+      price,
+      isActive,
+      imageUrl
+    } = action.item;
+    const items = yield add({
+      name: name,
+      description: description,
+      price: price,
+      imageUrl: imageUrl,
+      avatar: avatar,
+      createdAt: createdAt,
+      isActive: isActive
+    });
     yield put({
       type: types.CREATE_INDEXED_DB_INVENTORY_ITEM_SUCCESS,
       data: items
     });
   } catch (error) {
-    yield put({ type: types.CREATE_INDEXED_DB_INVENTORY_ITEM_FAILED, error });
+    yield put({
+      type: types.CREATE_INDEXED_DB_INVENTORY_ITEM_FAILED,
+      error: error
+    });
   }
 }
 
@@ -35,7 +55,10 @@ function* deleteInventory(action) {
       data: items
     });
   } catch (error) {
-    yield put({ type: types.DELETE_INDEXED_DB_INVENTORY_ITEM_FAILED, error });
+    yield put({
+      type: types.DELETE_INDEXED_DB_INVENTORY_ITEM_FAILED,
+      error: error
+    });
   }
 }
 
@@ -49,7 +72,10 @@ function* updateInventory(action) {
       data: items
     });
   } catch (error) {
-    yield put({ type: types.UPDATE_INDEXED_DB_INVENTORY_ITEM_FAILED, error });
+    yield put({
+      type: types.UPDATE_INDEXED_DB_INVENTORY_ITEM_FAILED,
+      error: error
+    });
   }
 }
 
@@ -62,7 +88,10 @@ function* fetchInventoryByID(action) {
       data: items
     });
   } catch (error) {
-    yield put({ type: types.GET_INDEXED_DB_INVENTORY_ITEM__FAILED, error });
+    yield put({
+      type: types.GET_INDEXED_DB_INVENTORY_ITEM__FAILED,
+      error: error
+    });
   }
 }
 
@@ -78,7 +107,7 @@ function* fetchInventoryByIndex(action) {
   } catch (error) {
     yield put({
       type: types.GET_INDEXED_DB_BY_INDEX_INVENTORY_ITEM__FAILED,
-      error
+      error: error
     });
   }
 }
@@ -86,9 +115,16 @@ function* fetchInventoryByIndex(action) {
 function* fetchInventories() {
   try {
     const items = yield getAll();
-    yield put({ type: types.GET_INDEXED_DB_INVENTORY_ITEMS_SUCCESS, items });
+    //console.log(items);
+    yield put({
+      type: types.GET_INDEXED_DB_INVENTORY_ITEMS_SUCCESS,
+      data: items
+    });
   } catch (error) {
-    yield put({ type: types.GET_INDEXED_DB_INVENTORY_ITEMS__FAILED, error });
+    yield put({
+      type: types.GET_INDEXED_DB_INVENTORY_ITEMS__FAILED,
+      error: error
+    });
   }
 }
 
@@ -97,7 +133,10 @@ function* clearInventories() {
     const items = yield clear();
     yield put({ type: types.CLEAR_INDEXED_DB_INVENTORY_ITEMS_SUCCESS, items });
   } catch (error) {
-    yield put({ type: types.CREATE_INDEXED_DB_INVENTORY_ITEM_FAILED, error });
+    yield put({
+      type: types.CREATE_INDEXED_DB_INVENTORY_ITEM_FAILED,
+      error: error
+    });
   }
 }
 
@@ -111,7 +150,7 @@ export function* inventoryIndexedDBSaga() {
     takeLatest(types.CREATE_INDEXED_DB_INVENTORY_ITEM, createInventory),
     takeLatest(types.UPDATE_INDEXED_DB_INVENTORY_ITEM, updateInventory),
     takeLatest(types.DELETE_INDEXED_DB_INVENTORY_ITEM, deleteInventory),
-    takeLatest(types.GET_INDEXED_DB_INVENTORY_ITEMS, fetchInventories),
+    takeEvery(types.GET_INDEXED_DB_INVENTORY_ITEMS, fetchInventories),
     takeLatest(types.CLEAR_INDEXED_DB_INVENTORY_ITEMS, clearInventories)
   ]);
 }

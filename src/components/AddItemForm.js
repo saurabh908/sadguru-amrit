@@ -2,66 +2,33 @@ import React from "react";
 import { Form, Button, Container, Col, Figure } from "react-bootstrap";
 import { Formik } from "formik";
 import * as yup from "yup";
-import { useIndexedDB } from "react-indexed-db";
-
-// const FILE_SIZE = 160 * 1024;
-// const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/gif", "image/png"];
 
 const shopSchema = yup.object({
   name: yup.string().required(),
   description: yup.string().default(),
   price: yup.string().required()
-  // file: yup
-  //   .mixed()
-  //   .notRequired()
-  //   .test(
-  //     "fileFormat",
-  //     "Unsupported Format",
-  //     value => value && SUPPORTED_FORMATS.includes(value.type)
-  //   )
-  //   .test(
-  //     "fileSize",
-  //     "File too large",
-  //     value => value && value.size <= FILE_SIZE
-  //   )
 });
 
-const AddToDB = values => {
-  //alert(JSON.stringify(values, null, 2));
-  const { add } = useIndexedDB("inventory");
-  add({
-    name: values.name,
-    createdAt: values.createdAt,
-    price: values.price,
-    description: values.description,
-    avatar: values.avatar
-  }).then(
-    event => {
-      console.log("Id generated ", event.currentTarget);
-    },
-    error => {
-      console.log(error);
-    }
-  );
-};
-
-const AddItemForm = () => {
+const AddItemForm = ({ actions }) => {
+  // console.log(actions);
   return (
     <div style={{ marginTop: "10px", marginBottom: "10px" }}>
       <Container>
         {/* <h2 style={{ color: "deepskyblue" }}>Add an item to Inventory</h2> */}
         <Formik
           validationSchema={shopSchema}
-          onSubmit={values => {
-            AddToDB(values);
+          onSubmit={item => {
+            actions.createIndexedDBInventory(item);
           }}
           initialValues={{
-            name: "item 1",
+            name: "item1",
             description: "Enter Description 1",
-            price: "0",
+            price: "14",
             file: "images/default-shop.jpg",
             avatar: "images/default-shop.jpg",
-            createdAt: new Date().toLocaleString("en-US", { hour12: false })
+            createdAt: new Date().toLocaleString("en-US", { hour12: false }),
+            imageUrl: "images/default-shop.jpg",
+            isActive: true
           }}
         >
           {({
@@ -69,10 +36,8 @@ const AddItemForm = () => {
             values,
             touched,
             errors,
-            isValid,
             handleChange,
-            setFieldValue,
-            validateOnBlur
+            setFieldValue
           }) => (
             <Form noValidate onSubmit={handleSubmit}>
               <Form.Row>
